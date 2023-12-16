@@ -1,14 +1,41 @@
 import './styles.css';
 import Header from '../../components/Header';
 import TeacherCard from '../../components/TeacherCard';
+import api from '../../services/api';
+import { useEffect, useState } from 'react';
+import Teacher from '../../types/Teacher';
 
 function Main() {
+  const [allTeachers, setAllTeachers] = useState<Teacher[]>([])
+
+  async function loadTeachers() {
+    try {
+      const response = await api.get('/teachers');
+
+      setAllTeachers([...response.data])
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    loadTeachers()
+  }, []);
+
+
   return (
-    <div className='container'>
+    <div className='container '>
       <Header />
 
-      <div>
-        <TeacherCard teacher={{ id: 1, name: 'Daniel', avatar: 'https://media.licdn.com/dms/image/D4D03AQEBbT7FDX7ZJw/profile-displayphoto-shrink_800_800/0/1692652307494?e=1707955200&v=beta&t=FElrqRdi5RvZhQ_yB3A3HJHXt_u0SugZefTPwFrPyRI' }} />
+      <div className='main-teachers'>
+        {allTeachers.map((teacher) => (
+          <TeacherCard
+            key={teacher.id}
+            teacher={teacher}
+          />
+        ))}
+
+
       </div>
     </div>
   );
