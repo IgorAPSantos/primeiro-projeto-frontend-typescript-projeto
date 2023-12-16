@@ -1,10 +1,14 @@
 import './styles.css'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import logo from '../../assets/logo.svg'
 import api from '../../services/api'
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
+import useAuth from '../../hooks/useAuth'
 
 function SignIn() {
+    const navigate = useNavigate()
+    const { handleGetToken, handleAddToken } = useAuth()
+
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
@@ -19,12 +23,25 @@ function SignIn() {
                 email,
                 password
             })
-            console.log(response);
 
+            const { accessToken } = response.data
+
+            handleAddToken(accessToken)
+            navigate('/main')
         } catch (error) {
             console.log(error)
         }
     }
+
+    useEffect(() => {
+        const token = handleGetToken()
+
+        if (token) {
+            navigate('/main')
+            return
+        }
+    }, [])
+
     return (
         <div className='container container-sign-in'>
             <div className='sign-in'>
